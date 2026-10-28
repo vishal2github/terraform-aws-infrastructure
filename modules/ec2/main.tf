@@ -1,3 +1,4 @@
+# Security group
 resource "aws_security_group" "web" {
   name   = "${var.project_name}-sg"
   vpc_id = var.vpc_id
@@ -26,6 +27,7 @@ resource "aws_security_group" "web" {
   }
 }
 
+# EC2 instance
 resource "aws_instance" "web" {
   ami           = data.aws_ami.amazon_linux.id
   instance_type = var.instance_type
@@ -47,6 +49,7 @@ resource "aws_instance" "web" {
   }
 }
 
+# AMI data source
 data "aws_ami" "amazon_linux" {
   most_recent = true
 

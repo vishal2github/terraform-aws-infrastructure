@@ -1,3 +1,4 @@
+# Define the VPC and its IPv4 range
 resource "aws_vpc" "this" {
   cidr_block = var.vpc_cidr
 
@@ -6,6 +7,7 @@ resource "aws_vpc" "this" {
   }
 }
 
+# Connect an internet gateway to the VPC
 resource "aws_internet_gateway" "this" {
   vpc_id = aws_vpc.this.id
 
@@ -14,6 +16,7 @@ resource "aws_internet_gateway" "this" {
   }
 }
 
+# Define the public subnets
 resource "aws_subnet" "public" {
   count = length(var.public_subnet_cidrs)
 
@@ -26,6 +29,7 @@ resource "aws_subnet" "public" {
   }
 }
 
+# Define the route table
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.this.id
 
@@ -34,12 +38,14 @@ resource "aws_route_table" "public" {
   }
 }
 
+# Add the default IPv4 route to the internet gateway
 resource "aws_route" "internet" {
   route_table_id         = aws_route_table.public.id
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = aws_internet_gateway.this.id
 }
 
+# Associate each subnet with the route table
 resource "aws_route_table_association" "public" {
   count = length(var.public_subnet_cidrs)
 

@@ -6,5 +6,4 @@ variable "public_subnet_cidrs" {
 }
 
 variable "instance_type" {
-  default = "t2.micro"
 }
