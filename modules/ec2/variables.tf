@@ -13,3 +13,8 @@ variable "subnet_id" {
 variable "project_name" {
   type = string
 }
+
+variable "ssh_allowed_cidr" {
+  type        = string
+  description = "CIDR block allowed to access EC2 through SSH"
+}
