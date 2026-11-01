@@ -17,3 +17,8 @@ variable "ssh_allowed_cidr" {
   type        = string
   description = "CIDR block allowed to access EC2 through SSH"
 }
+
+variable "http_allowed_cidr" {
+  type        = string
+  description = "CIDR block allowed to access EC2 through HTTP"
+}
