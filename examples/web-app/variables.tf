@@ -1,3 +1,9 @@
+variable "aws_profile" {
+  type        = string
+  description = "AWS CLI profile used for authentication"
+  default     = "terraform-sso"
+}
+
 variable "aws_region" {
   type        = string
   description = "AWS region where infrastructure will be deployed"
