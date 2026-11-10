@@ -1,6 +1,56 @@
+locals {
+  vpc_first_ip = parseint(
+    join("", [
+      for octet in split(".", cidrhost(var.vpc_cidr, 0)) :
+      format("%02x", tonumber(octet))
+    ]),
+    16
+  )
+
+  vpc_last_ip = parseint(
+    join("", [
+      for octet in split(".", cidrhost(var.vpc_cidr, -1)) :
+      format("%02x", tonumber(octet))
+    ]),
+    16
+  )
+
+  subnet_ip_ranges = [
+    for cidr in var.public_subnet_cidrs : {
+      first = parseint(
+        join("", [
+          for octet in split(".", cidrhost(cidr, 0)) :
+          format("%02x", tonumber(octet))
+        ]),
+        16
+      )
+
+      last = parseint(
+        join("", [
+          for octet in split(".", cidrhost(cidr, -1)) :
+          format("%02x", tonumber(octet))
+        ]),
+        16
+      )
+    }
+  ]
+}
+
 # Define the VPC and its IPv4 range
 resource "aws_vpc" "this" {
   cidr_block = var.vpc_cidr
+
+  lifecycle {
+    precondition {
+      condition = alltrue([
+        for subnet_range in local.subnet_ip_ranges :
+        subnet_range.first >= local.vpc_first_ip &&
+        subnet_range.last <= local.vpc_last_ip
+      ])
+
+      error_message = "Every public subnet CIDR must fall entirely within the configured VPC CIDR range."
+    }
+  }
 
   tags = {
     Name = "${var.project_name}-vpc"
