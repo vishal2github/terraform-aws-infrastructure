@@ -3,7 +3,7 @@ variable "vpc_cidr" {
   description = "CIDR block for VPC"
 
   validation {
-    condition     = can(cidrhost(var.vpc_cidr, 0))
+    condition     = can(cidrnetmask(var.vpc_cidr))
     error_message = "The vpc_cidr must be a valid IPv4 CIDR block."
   }
 }
@@ -27,7 +27,7 @@ variable "public_subnet_cidrs" {
       length(var.public_subnet_cidrs) > 0 &&
       alltrue([
         for cidr in var.public_subnet_cidrs :
-        can(cidrhost(cidr, 0))
+        can(cidrnetmask(cidr))
       ])
     )
 
