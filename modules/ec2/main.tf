@@ -36,6 +36,13 @@ resource "aws_instance" "web" {
 
   vpc_security_group_ids = [aws_security_group.web.id]
 
+  # IMDSv2 security
+  metadata_options {
+    http_endpoint               = "enabled"
+    http_tokens                 = "required"
+    http_put_response_hop_limit = 1
+  }
+
   user_data = <<-EOF
               #!/bin/bash
               yum update -y
