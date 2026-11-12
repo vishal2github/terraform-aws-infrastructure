@@ -34,6 +34,17 @@ locals {
       )
     }
   ]
+
+  subnet_pairs = flatten([
+    for i, subnet_a in local.subnet_ip_ranges : [
+      for j, subnet_b in local.subnet_ip_ranges : {
+        overlaps = (
+          subnet_a.first <= subnet_b.last &&
+          subnet_b.first <= subnet_a.last
+        )
+      } if i < j
+    ]
+  ])
 }
 
 # Define the VPC and its IPv4 range
@@ -41,6 +52,7 @@ resource "aws_vpc" "this" {
   cidr_block = var.vpc_cidr
 
   lifecycle {
+    # CIDR containment validation
     precondition {
       condition = alltrue([
         for subnet_range in local.subnet_ip_ranges :
@@ -49,6 +61,16 @@ resource "aws_vpc" "this" {
       ])
 
       error_message = "Every public subnet CIDR must fall entirely within the configured VPC CIDR range."
+    }
+
+    # Subnet overlap validation
+    precondition {
+      condition = alltrue([
+        for pair in local.subnet_pairs :
+        !pair.overlaps
+      ])
+
+      error_message = "Public subnet CIDR blocks must not overlap."
     }
   }
 
