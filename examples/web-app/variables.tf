@@ -9,15 +9,25 @@ variable "aws_region" {
   description = "AWS region where infrastructure will be deployed"
 }
 
-variable "vpc_cidr" {}
-
 variable "project_name" {}
+
+variable "vpc_cidr" {}
 
 variable "public_subnet_cidrs" {
   type = list(string)
 }
 
 variable "instance_type" {}
+
+variable "key_name" {
+  type        = string
+  description = "Name of the existing AWS EC2 key pair"
+
+  validation {
+    condition     = length(trimspace(var.key_name)) > 0
+    error_message = "The key_name value must not be empty or contain only whitespace."
+  }
+}
 
 variable "ssh_allowed_cidr" {
   type        = string

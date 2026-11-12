@@ -1,3 +1,13 @@
+variable "project_name" {
+  type        = string
+  description = "Project name"
+
+  validation {
+    condition     = length(trimspace(var.project_name)) > 0
+    error_message = "The project_name value must not be empty or contain only whitespace."
+  }
+}
+
 variable "vpc_id" {
   type        = string
   description = "VPC ID"
@@ -28,13 +38,13 @@ variable "instance_type" {
   }
 }
 
-variable "project_name" {
+variable "key_name" {
   type        = string
-  description = "Project name"
+  description = "Name of the existing AWS EC2 key pair"
 
   validation {
-    condition     = length(trimspace(var.project_name)) > 0
-    error_message = "The project_name value must not be empty or contain only whitespace."
+    condition     = length(trimspace(var.key_name)) > 0
+    error_message = "The key_name value must not be empty or contain only whitespace."
   }
 }
 
